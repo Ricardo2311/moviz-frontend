@@ -1,0 +1,3 @@
+# Scripts executados em Mac/Linux (build iOS, CI) precisam de LF.
+gradlew text eol=lf
+*.sh text eol=lf

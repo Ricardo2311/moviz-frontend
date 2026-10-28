@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Moviz</string>
+    <string name="title_activity_main">Moviz</string>
+    <string name="package_name">com.moviz.app</string>
+    <string name="custom_url_scheme">com.moviz.app</string>
+    <!-- AdMob: ID de TESTE do Google. Trocar pelo App ID real (Android) antes de publicar. -->
+    <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
+</resources>

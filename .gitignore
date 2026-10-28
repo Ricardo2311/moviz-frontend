@@ -21,3 +21,12 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Logs locais
+*.log
+
+# Chaves de assinatura do app (NUNCA versionar — guarde backup fora do repo)
+*.jks
+*.keystore
+*.p12
+*.mobileprovision

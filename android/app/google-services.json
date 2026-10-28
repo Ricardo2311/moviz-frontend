@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1079406907431",
+    "project_id": "moviz-e8326",
+    "storage_bucket": "moviz-e8326.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079406907431:android:8d25b34d1f09022a673e02",
+        "android_client_info": {
+          "package_name": "com.moviz.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADxu3ZPkir48qEA2RbJyFb49b097FKJE4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
