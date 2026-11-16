@@ -66,10 +66,14 @@ export default function TermsOfService() {
             <li>Criar perfis falsos ou se passar por outras pessoas</li>
             <li>Coletar dados de outros usuários sem autorização</li>
             <li>Usar o app para fins comerciais sem autorização prévia</li>
+            <li>Publicar conteúdo sexual explícito, violento, ameaças ou que incentive atividades ilegais</li>
           </ul>
           <p>
-            Violações podem resultar em remoção de conteúdo, suspensão ou exclusão permanente
-            da conta.
+            <strong>Tolerância zero:</strong> o Moviz não tolera conteúdo ofensivo nem usuários
+            abusivos. Você pode <strong>denunciar</strong> qualquer post, comentário, perfil ou mensagem
+            pelo menu "⋯" e <strong>bloquear</strong> qualquer usuário. Analisamos as denúncias em até
+            24 horas; conteúdo que viole estes Termos é removido e a conta responsável pode ser suspensa
+            ou excluída permanentemente, sem aviso prévio.
           </p>
         </section>
 

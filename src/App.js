@@ -97,6 +97,12 @@ function BackButtonHandler() {
     let cleanup = () => {};
     import('@capacitor/app').then(({ App: CapApp }) => {
       CapApp.addListener('backButton', ({ canGoBack }) => {
+        // Close report sheet (denúncia) — fica por cima de qualquer outra tela
+        const reportSheet = document.querySelector('.report-sheet-overlay');
+        if (reportSheet) {
+          reportSheet.querySelector('.report-sheet-cancel')?.click();
+          return;
+        }
         // Close innermost dialog first (post-rate prompt inside movie modal)
         const innerDialog = document.querySelector('.movie-post-prompt-overlay');
         if (innerDialog) {

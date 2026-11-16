@@ -1069,6 +1069,35 @@ img{display:block}
 .premium-restore{align-self:center}
 .premium-legal{margin:0;font-size:0.75rem;color:var(--text-3);text-align:center}
 
+/* Moderação — menu "⋯" (denunciar/bloquear), folha de denúncia e bloqueados */
+.content-actions{position:relative;flex-shrink:0;margin-left:auto}
+.content-actions-trigger{width:34px;height:34px;border-radius:var(--r-pill);border:none;background:transparent;color:var(--text-2);font-size:1.25rem;line-height:1;cursor:pointer;transition:background var(--t)}
+.content-actions-trigger:hover,.content-actions-trigger[aria-expanded="true"]{background:var(--bg-4);color:var(--text-1)}
+.content-actions-menu{position:absolute;right:0;top:calc(100% + 4px);z-index:50;min-width:200px;background:var(--bg-3);border:1px solid var(--border-md);border-radius:var(--r-m);box-shadow:var(--shadow-md);padding:6px;display:flex;flex-direction:column}
+.content-actions-menu button{background:none;border:none;color:var(--text-1);text-align:left;padding:10px 12px;border-radius:var(--r-s);font-size:0.9rem;cursor:pointer}
+.content-actions-menu button:hover{background:var(--bg-4)}
+.content-actions-menu button.danger{color:var(--brand)}
+.report-sheet-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center}
+.report-sheet{width:100%;max-width:520px;max-height:90vh;overflow-y:auto;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-xl) var(--r-xl) 0 0;padding:20px 16px calc(20px + var(--safe-bottom))}
+.report-sheet h3{margin:0 0 6px;font-size:1.1rem}
+.report-sheet-copy{margin:0 0 14px;color:var(--text-2);font-size:0.88rem}
+.report-sheet-reasons{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.report-reason{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border-md);border-radius:var(--r-m);cursor:pointer;font-size:0.92rem}
+.report-reason.selected{border-color:var(--brand);background:var(--brand-light)}
+.report-reason input{accent-color:var(--brand)}
+.report-sheet textarea{width:100%;resize:vertical;min-height:70px;background:var(--bg-3);color:var(--text-1);border:1px solid var(--border-md);border-radius:var(--r-m);padding:10px 12px;font-family:inherit}
+.report-sheet-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
+.feed-comment-row{display:flex;align-items:flex-start;gap:4px}
+.feed-comment-row .feed-comment{flex:1;min-width:0}
+.dm-msg-sender-row{display:flex;align-items:center;gap:2px}
+.dm-msg-sender-row .content-actions{margin-left:0}
+.dm-msg-sender-row .content-actions-trigger{width:26px;height:26px;font-size:1rem}
+.friend-profile-actions{display:flex;align-items:center;gap:8px}
+.blocked-profile-card{max-width:560px;margin:40px auto;padding:24px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.blocked-profile-card p{color:var(--text-2);margin:0 0 6px}
+.blocked-users-section{display:flex;flex-direction:column;gap:8px;margin-top:18px}
+.blocked-user-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 12px;background:var(--bg-3);border-radius:var(--r-m)}
+
 /* === 12. CHAT / CINEBOT === */
 /* Mobile-first: sidebar is a drawer, main is full-screen */
 .chat-page{

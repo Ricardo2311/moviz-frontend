@@ -33,6 +33,11 @@ function Login() {
   const location    = useLocation();
   const redirectTo  = location.state?.from?.pathname || '/home';
 
+  // Motivo vindo de outra tela (ex.: conta suspensa pela moderação).
+  React.useEffect(() => {
+    if (location.state?.notice) setError(location.state.notice);
+  }, [location.state]);
+
   /* Auto-redirect if already logged in (use cache first to avoid flicker) */
   React.useEffect(() => {
     const token = getStoredToken();

@@ -10,6 +10,7 @@ import {
   sendDirectMessage,
 } from '../api';
 import { getStoredToken } from '../authStorage';
+import ContentActions from '../components/ContentActions';
 
 function buildInitials(conv) {
   if (!conv) return 'DM';
@@ -296,6 +297,15 @@ export default function Direct() {
   }
 
   /* ── CHAT ───────────────────────────────────────────────────── */
+  // Bloqueou alguém pela conversa: ela some da lista e voltamos para a lista.
+  const handleBlockedInChat = () => {
+    setConversations((current) => current.filter((conv) => conv.id !== selectedId));
+    setView('list');
+  };
+  const otherParticipant = selectedConv && !selectedConv.is_group
+    ? selectedConv.participants.find((p) => p.username !== currentUsername)
+    : null;
+
   return (
     <div className="dm-page dm-page--chat">
       <header className="dm-header">
@@ -311,6 +321,14 @@ export default function Direct() {
                 {selectedConv.participants.map((p) => `@${p.username}`).join(', ')}
               </p>
             </div>
+            {otherParticipant ? (
+              <ContentActions
+                targetType="user"
+                targetId={otherParticipant.id}
+                author={otherParticipant}
+                onBlocked={handleBlockedInChat}
+              />
+            ) : null}
           </>
         ) : (
           <p className="dm-header-title">Carregando...</p>
@@ -340,7 +358,16 @@ export default function Direct() {
           return (
             <div key={msg.id} className={`dm-msg${isMe ? ' dm-msg--me' : ''}`}>
               {!isMe && (
-                <span className="dm-msg-sender">@{msg.sender.username}</span>
+                <div className="dm-msg-sender-row">
+                  <span className="dm-msg-sender">@{msg.sender.username}</span>
+                  <ContentActions
+                    targetType="message"
+                    targetId={msg.id}
+                    author={msg.sender}
+                    allowBlock={!otherParticipant}
+                    onBlocked={handleBlockedInChat}
+                  />
+                </div>
               )}
               <div className={`dm-bubble${isMe ? ' dm-bubble--me' : ''}${post ? ' dm-bubble--post' : ''}`}>
                 {post && (

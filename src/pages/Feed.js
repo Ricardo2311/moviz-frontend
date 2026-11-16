@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import HomeButton from '../components/HomeButton';
 import MovieDetailsModal from '../components/MovieDetailsModal';
 import RichText from '../components/RichText';
+import ContentActions from '../components/ContentActions';
 import {
   createPostComment,
   fetchFeed,
@@ -73,7 +74,7 @@ function FeedSkeleton({ compact = false }) {
   );
 }
 
-function CommentsModal({ post, comments, loading, onClose, navigate }) {
+function CommentsModal({ post, comments, loading, onClose, navigate, onBlocked }) {
   if (!post) {
     return null;
   }
@@ -98,15 +99,22 @@ function CommentsModal({ post, comments, loading, onClose, navigate }) {
           ) : null}
           {!loading
             ? comments.map((comment) => (
-                <button
-                  key={comment.id}
-                  type="button"
-                  className="feed-comment feed-comment-modal"
-                  onClick={() => navigate(`/users/${comment.author.username}`)}
-                >
-                  <strong>@{comment.author.username}</strong>
-                  <p><RichText text={comment.content} /></p>
-                </button>
+                <div key={comment.id} className="feed-comment-row">
+                  <button
+                    type="button"
+                    className="feed-comment feed-comment-modal"
+                    onClick={() => navigate(`/users/${comment.author.username}`)}
+                  >
+                    <strong>@{comment.author.username}</strong>
+                    <p><RichText text={comment.content} /></p>
+                  </button>
+                  <ContentActions
+                    targetType="comment"
+                    targetId={comment.id}
+                    author={comment.author}
+                    onBlocked={onBlocked}
+                  />
+                </div>
               ))
             : null}
         </div>
@@ -160,6 +168,7 @@ function PostCard({
   onSharePost,
   shareTargets,
   onFollow,
+  onBlocked,
   navigate,
 }) {
   const [comment, setComment] = useState('');
@@ -282,6 +291,13 @@ function PostCard({
             {post.author.is_following ? 'Seguindo' : 'Seguir'}
           </button>
         ) : null}
+        <ContentActions
+          targetType="post"
+          targetId={post.id}
+          author={post.author}
+          currentUserId={currentUserId}
+          onBlocked={onBlocked}
+        />
       </div>
 
       {(post.movie_poster_path || post.movie_title) && (
@@ -496,15 +512,23 @@ function PostCard({
             {post.comments?.length ? (
               <>
                 {post.comments.map((commentItem) => (
-                  <button
-                    type="button"
-                    key={commentItem.id}
-                    className="feed-comment"
-                    onClick={() => navigate(`/users/${commentItem.author.username}`)}
-                  >
-                    <strong>@{commentItem.author.username}</strong>
-                    <p><RichText text={commentItem.content} /></p>
-                  </button>
+                  <div key={commentItem.id} className="feed-comment-row">
+                    <button
+                      type="button"
+                      className="feed-comment"
+                      onClick={() => navigate(`/users/${commentItem.author.username}`)}
+                    >
+                      <strong>@{commentItem.author.username}</strong>
+                      <p><RichText text={commentItem.content} /></p>
+                    </button>
+                    <ContentActions
+                      targetType="comment"
+                      targetId={commentItem.id}
+                      author={commentItem.author}
+                      currentUserId={currentUserId}
+                      onBlocked={onBlocked}
+                    />
+                  </div>
                 ))}
                 {post.comment_count > post.comments.length ? (
                   <button
@@ -908,6 +932,20 @@ function Feed() {
     }
   };
 
+  // Depois de bloquear: some na hora tudo o que a pessoa publicou ou comentou.
+  const handleBlocked = useCallback((author) => {
+    setFeedItems((current) =>
+      current
+        .filter((post) => post.author.id !== author.id)
+        .map((post) => ({
+          ...post,
+          comments: (post.comments || []).filter((c) => c.author.id !== author.id),
+        }))
+    );
+    setCommentsModalItems((current) => current.filter((c) => c.author.id !== author.id));
+    if (commentsModalPost?.author?.id === author.id) setCommentsModalPost(null);
+  }, [commentsModalPost]);
+
   const handleFollow = async (userId) => {
     if (!token) {
       return;
@@ -1124,6 +1162,7 @@ function Feed() {
                   onSharePost={handleSharePost}
                   shareTargets={friends}
                   onFollow={handleFollow}
+                  onBlocked={handleBlocked}
                   navigate={navigate}
                 />
               </div>
@@ -1163,6 +1202,7 @@ function Feed() {
           setCommentsModalLoading(false);
         }}
         navigate={navigate}
+        onBlocked={handleBlocked}
       />
       <ConfirmUnfollowModal
         user={confirmUnfollowUser}

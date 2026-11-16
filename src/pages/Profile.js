@@ -12,6 +12,7 @@ import {
   createMyList,
   deleteMyAccount,
   deleteMyList,
+  fetchBlockedUsers,
   fetchMovieDetails,
   fetchMyCriticApplication,
   fetchMyListDetail,
@@ -22,6 +23,7 @@ import {
   rejectFollowRequest,
   searchMovies,
   submitCriticApplication,
+  unblockUser,
   updateMyList,
   updateProfile,
 } from '../api';
@@ -415,6 +417,8 @@ function ProfileSettingsModal({
           </button>
         </div>
 
+        <BlockedUsersSection />
+
         <div className="profile-danger-zone">
           <hr className="profile-danger-divider" />
           {!deleteConfirming ? (
@@ -578,6 +582,43 @@ function ListFormModal({
 }
 
 const APPLICATION_MOTIVATION_LIMIT = 800;
+
+function BlockedUsersSection() {
+  const [blocked, setBlocked] = useState(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchBlockedUsers(getStoredToken())
+      .then(setBlocked)
+      .catch(() => setError('Não foi possível carregar os bloqueados.'));
+  }, []);
+
+  const handleUnblock = async (user) => {
+    try {
+      await unblockUser(getStoredToken(), user.id);
+      setBlocked((current) => current.filter((u) => u.id !== user.id));
+    } catch (err) {
+      setError(err.message || 'Não foi possível desbloquear.');
+    }
+  };
+
+  return (
+    <div className="blocked-users-section">
+      <label>Usuários bloqueados</label>
+      {error ? <p className="error">{error}</p> : null}
+      {blocked === null && !error ? <p className="helper-copy">Carregando…</p> : null}
+      {blocked?.length === 0 ? <p className="helper-copy">Você não bloqueou ninguém.</p> : null}
+      {blocked?.map((user) => (
+        <div key={user.id} className="blocked-user-row">
+          <span>@{user.username}</span>
+          <button type="button" className="secondary-button" onClick={() => handleUnblock(user)}>
+            Desbloquear
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function PremiumEntryCard({ isPremium }) {
   const navigate = useNavigate();

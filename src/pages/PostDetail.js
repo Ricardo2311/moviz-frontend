@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import RichText from '../components/RichText';
+import ContentActions from '../components/ContentActions';
 import MovieDetailsModal from '../components/MovieDetailsModal';
 import {
   fetchFeedPost,
@@ -212,6 +213,12 @@ export default function PostDetail() {
           {post.contains_spoiler && (
             <span className="pd-spoiler-badge">⚠️ Spoiler</span>
           )}
+          <ContentActions
+            targetType="post"
+            targetId={post.id}
+            author={post.author}
+            onBlocked={() => navigate(-1)}
+          />
         </div>
 
         {/* Movie poster */}
@@ -324,6 +331,12 @@ export default function PostDetail() {
                 <span className="pd-comment-time"> · {relativeTime(c.created_at)}</span>
                 <p className="pd-comment-text"><RichText text={c.content} /></p>
               </div>
+              <ContentActions
+                targetType="comment"
+                targetId={c.id}
+                author={c.author}
+                onBlocked={(author) => setComments((cur) => cur.filter((x) => x.author.id !== author.id))}
+              />
             </div>
           ))}
 

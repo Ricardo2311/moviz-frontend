@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 import { getCurrentUser } from '../api';
-import { getStoredToken } from '../authStorage';
+import { clearStoredToken, getStoredToken } from '../authStorage';
 import { apiCache } from '../apiCache';
 
 /**
@@ -23,6 +23,7 @@ function ProtectedRoute() {
     !token ? 'no-token' : cachedUser ? 'ready' : 'loading'
   );
   const [user, setUser] = React.useState(cachedUser ?? null);
+  const [notice, setNotice] = React.useState('');
 
   React.useEffect(() => {
     if (!token) {
@@ -48,8 +49,14 @@ function ProtectedRoute() {
         setUser(payload);
         setStatus('ready');
       })
-      .catch(() => {
+      .catch((err) => {
         if (ignore) return;
+        if (err.status === 403) {
+          // Conta suspensa pela moderação: sai e mostra o motivo no login.
+          clearStoredToken();
+          apiCache.invalidate('current-user');
+          setNotice(err.message);
+        }
         setStatus('invalid');
       });
 
@@ -58,7 +65,7 @@ function ProtectedRoute() {
   }, [token]); // ← only token, NOT location.pathname
 
   if (!token || status === 'no-token' || status === 'invalid') {
-    return <Navigate to="/login" replace state={{ from: location }} />;
+    return <Navigate to="/login" replace state={{ from: location, notice }} />;
   }
 
   if (status === 'loading') {

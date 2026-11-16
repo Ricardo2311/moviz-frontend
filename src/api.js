@@ -488,6 +488,39 @@ export async function unfollowUser(token, userId) {
   return readJson(response, 'Unfollow action failed');
 }
 
+export async function blockUser(token, userId) {
+  const response = await fetch(`${baseUrl}/api/users/${userId}/block`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return readJson(response, 'Block failed');
+}
+
+export async function unblockUser(token, userId) {
+  const response = await fetch(`${baseUrl}/api/users/${userId}/block`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return readJson(response, 'Unblock failed');
+}
+
+export async function fetchBlockedUsers(token) {
+  const response = await fetch(`${baseUrl}/api/blocks`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return readJson(response, 'Blocked users fetch failed');
+}
+
+// targetType: 'post' | 'comment' | 'user' | 'message'
+export async function reportContent(token, { targetType, targetId, reason, details }) {
+  const response = await fetch(`${baseUrl}/api/reports`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ target_type: targetType, target_id: targetId, reason, details: details || null }),
+  });
+  return readJson(response, 'Report failed');
+}
+
 export async function removeFollower(token, userId) {
   const response = await fetch(`${baseUrl}/api/users/${userId}/follower`, {
     method: 'DELETE',

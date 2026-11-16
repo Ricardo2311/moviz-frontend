@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import HomeButton from '../components/HomeButton';
 import MovieDetailsModal from '../components/MovieDetailsModal';
+import ContentActions from '../components/ContentActions';
 import ProfileOverview from '../components/ProfileOverview';
-import { fetchMovieDetails, fetchUserProfile, fetchUserRatings, followUser, unfollowUser } from '../api';
+import {
+  fetchMovieDetails, fetchUserProfile, fetchUserRatings, followUser, unblockUser, unfollowUser,
+} from '../api';
 import { getStoredToken } from '../authStorage';
 
 function ConfirmActionModal({ open, title, message, confirmLabel, loading, onClose, onConfirm }) {
@@ -52,7 +55,7 @@ function FriendProfile() {
   const { username } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const loadProfile = useCallback(() => {
     const token = getStoredToken();
     if (!token) {
       navigate('/login', { replace: true });
@@ -61,7 +64,7 @@ function FriendProfile() {
 
     fetchUserProfile(token, username)
       .then(async (profilePayload) => {
-        const ratingsPayload = profilePayload.can_view_private_profile
+        const ratingsPayload = profilePayload.can_view_private_profile && !profilePayload.is_blocked
           ? await fetchUserRatings(token, username).catch(() => [])
           : [];
         setProfile(profilePayload);
@@ -69,6 +72,21 @@ function FriendProfile() {
       })
       .catch((err) => setPageError(err.message));
   }, [navigate, username]);
+
+  useEffect(() => { loadProfile(); }, [loadProfile]);
+
+  const [unblocking, setUnblocking] = useState(false);
+  const handleUnblock = async () => {
+    setUnblocking(true);
+    try {
+      await unblockUser(getStoredToken(), profile.user.id);
+      loadProfile();
+    } catch (err) {
+      setPageError(err.message || 'Não foi possível desbloquear.');
+    } finally {
+      setUnblocking(false);
+    }
+  };
 
   const handleMovieClick = async (movie) => {
     const token = getStoredToken();
@@ -178,6 +196,21 @@ function FriendProfile() {
     }
   };
 
+  if (profile.is_blocked) {
+    return (
+      <>
+        <HomeButton />
+        <div className="blocked-profile-card">
+          <h2>@{profile.user.username}</h2>
+          <p>Você bloqueou esta pessoa. Vocês não veem o conteúdo um do outro nem trocam mensagens.</p>
+          <button type="button" className="secondary-button" onClick={handleUnblock} disabled={unblocking}>
+            {unblocking ? 'Desbloqueando…' : 'Desbloquear'}
+          </button>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <HomeButton />
@@ -188,6 +221,7 @@ function FriendProfile() {
         subtitle="Veja os filmes assistidos, as insignias e a rede social deste perfil."
         isEditable={false}
         profileAction={(
+          <div className="friend-profile-actions">
           <button
             type="button"
             className={profile.is_following ? 'secondary-button' : 'primary-button'}
@@ -204,6 +238,13 @@ function FriendProfile() {
                     ? 'Pedir para seguir'
                     : 'Seguir'}
           </button>
+          <ContentActions
+            targetType="user"
+            targetId={profile.user.id}
+            author={profile.user}
+            onBlocked={loadProfile}
+          />
+          </div>
         )}
         onOpenSettings={() => {}}
         onOpenConnections={(kind) => navigate(`/users/${profile.user.username}/connections/${kind}`)}
